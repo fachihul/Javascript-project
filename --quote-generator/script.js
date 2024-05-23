@@ -1,39 +1,45 @@
-const quoteContainer = document.getElementById("quote-container");
-const quoteText = document.getElementById("quote");
-const authorText = document.getElementById("author");
-const twitterBtn = document.getElementById("twitter");
-const newQuoteBtn = document.getElementById("new-quote");
-
 let apiQuotes = [];
-// Show New Quote
-function newQuote(params) {
-    // Pick a random quote from api quotes
-    const quote = apiQuotes[Math.floor(Math.random() * apiQuotes.length)];
-    // Check if author field is blank and replace it with "Unknown"
-    if (!quote.author) {
-        authorText.textContent = "Unknown";
+let newQuote = document.getElementById("quote");
+let authorName = document.getElementById("author");
+let newQuoteBtn = document.getElementById("new-quote");
+const twitterBtn = document.getElementById("twitter");
+
+newQuoteBtn.addEventListener("click", function () {
+    randomQuote = apiQuotes[Math.floor(Math.random() * apiQuotes.length)];
+    newQuote.textContent = randomQuote.text;
+    if (!randomQuote.author) {
+        authorName.textContent = "Unknown";
     } else {
-        authorText.textContent = quote.author;
+        authorName.textContent = randomQuote.author;
     }
-    // Check quote length to determine styling
-    if (quote.text.length > 50) {
-        quoteText.classList.add("long-quote");
+    // Check quote length and style it
+    if (randomQuote.text.length > 120) {
+        newQuote.classList.add("long-quote");
     } else {
-        quoteText.classList.remove("long-quote");
+        newQuote.classList.remove("long-quote");
     }
-    quoteText.textContent = quote.text;
-}
-// Get Quotes From API
+
+    // getQuote();
+});
+
+// Get Quote from API
 async function getQuote() {
     const apiUrl = "https://type.fit/api/quotes";
     try {
         const response = await fetch(apiUrl);
         apiQuotes = await response.json();
-        newQuote();
     } catch (error) {
         // Catch error
     }
 }
+
+// tweet Quote
+function tweetQuote() {
+    const twitterUrl = `https://x.com/intent/tweet?text=${newQuote.textContent} - ${authorName.textContent}`;
+    window.open(twitterUrl, "-blank");
+}
+// Event Listener
+twitterBtn.addEventListener("click", tweetQuote);
 
 // On load
 getQuote();
